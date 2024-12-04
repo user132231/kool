@@ -16,7 +16,15 @@ function Get-RingUmbermoot {
 
 # Peamine protsess, mis küsib kasutajalt sisendid ja kuvab tulemused
 function Start-RingArvutus {
-    $Tüüp = Read-Host "Kas soovite sisestada raadiuse või diameetri?"
+    # Kontrollime, et kasutaja sisestaks ainult "Raadius" või "Diameeter"
+    $Tüüp = $null
+    while ($Tüüp -notin @("Raadius", "Diameeter")) {
+        $Tüüp = Read-Host "Kas soovite sisestada raadiuse või diameetri? (vali 'Raadius' või 'Diameeter')"
+        if ($Tüüp -notin @("Raadius", "Diameeter")) {
+            Write-Host "Palun sisestage 'Raadius' või 'Diameeter'." -ForegroundColor Yellow
+        }
+    }
+
     $Sisend = Read-Host "Sisestage $Tüüp väärtus"
 
     if ($Tüüp -eq "Diameeter") {
