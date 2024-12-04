@@ -57,14 +57,21 @@ function Start-RingArvutus {
     }
 
     # Küsime algandmete väärtust
-    $Sisend = Read-Host "Sisestage $Tüüp väärtus (positiivne arv)"
-    while (-not ($Sisend -as [double]) -or [double]$Sisend -le 0) {
-        Write-Host "Palun sisestage positiivne arv." -ForegroundColor Yellow
-        $Sisend = Read-Host "Sisestage $Tüüp väärtus (positiivne arv)"
+    $Sisend = $null
+    while (-not ($Sisend -is [double]) -or $Sisend -le 0) {
+        $Sisestus = Read-Host "Sisestage $Tüüp väärtus (positiivne arv)"
+        try {
+            $Sisend = [double]$Sisestus
+            if ($Sisend -le 0) {
+                Write-Host "Sisestatud väärtus peab olema positiivne arv." -ForegroundColor Yellow
+            }
+        } catch {
+            Write-Host "Palun sisestage kehtiv arvuline väärtus." -ForegroundColor Yellow
+        }
     }
 
     # Arvutame tulemused
-    $Tulemus = Calculate-Ring -Sisend [double]$Sisend -Tüüp $Tüüp
+    $Tulemus = Calculate-Ring -Sisend $Sisend -Tüüp $Tüüp
 
     # Kuvame tulemused
     Write-Host "Arvutuse tulemused:" -ForegroundColor Green
