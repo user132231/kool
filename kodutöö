@@ -1,0 +1,77 @@
+# Funktsioon, mis arvutab ringi pindala
+function Get-RingPindala {
+    param (
+        [Parameter(Mandatory)]
+        [ValidateRange(0.0001, [double]::MaxValue)]
+        [double]$Raadius
+    )
+    return [math]::PI * ($Raadius * $Raadius)
+}
+
+# Funktsioon, mis arvutab ringi ümbermõõdu
+function Get-RingÜmbermõõt {
+    param (
+        [Parameter(Mandatory)]
+        [ValidateRange(0.0001, [double]::MaxValue)]
+        [double]$Raadius
+    )
+    return 2 * [math]::PI * $Raadius
+}
+
+# Funktsioon, mis arvutab ringi pindala ja ümbermõõdu, võttes sisendiks raadiuse või diameetri
+function Calculate-Ring {
+    param (
+        [Parameter(Mandatory)]
+        [ValidateRange(0.0001, [double]::MaxValue)]
+        [double]$Sisend,
+        [Parameter(Mandatory)]
+        [ValidateSet("Raadius", "Diameeter")]
+        [string]$Tüüp
+    )
+
+    # Arvuta raadius vastavalt sisendile
+    $Raadius = if ($Tüüp -eq "Raadius") {
+        $Sisend
+    } else {
+        $Sisend / 2
+    }
+
+    # Arvuta pindala ja ümbermõõt
+    $Pindala = Get-RingPindala -Raadius $Raadius
+    $Ümbermõõt = Get-RingÜmbermõõt -Raadius $Raadius
+
+    return @{
+        Raadius = $Raadius
+        Pindala = [math]::Round($Pindala, 2)
+        Ümbermõõt = [math]::Round($Ümbermõõt, 2)
+    }
+}
+
+# Peamine protsess, mis küsib kasutajalt sisendid ja kuvab tulemused
+function Start-RingArvutus {
+    # Küsime, kas kasutaja soovib sisestada raadiuse või diameetri
+    $Tüüp = Read-Host "Kas soovite sisestada raadiuse või diameetri? (vali 'Raadius' või 'Diameeter')"
+    while ($Tüüp -notin @("Raadius", "Diameeter")) {
+        Write-Host "Palun sisestage 'Raadius' või 'Diameeter'." -ForegroundColor Yellow
+        $Tüüp = Read-Host "Kas soovite sisestada raadiuse või diameetri? (vali 'Raadius' või 'Diameeter')"
+    }
+
+    # Küsime algandmete väärtust
+    $Sisend = Read-Host "Sisestage $Tüüp väärtus (positiivne arv)"
+    while (-not ($Sisend -as [double]) -or [double]$Sisend -le 0) {
+        Write-Host "Palun sisestage positiivne arv." -ForegroundColor Yellow
+        $Sisend = Read-Host "Sisestage $Tüüp väärtus (positiivne arv)"
+    }
+
+    # Arvutame tulemused
+    $Tulemus = Calculate-Ring -Sisend [double]$Sisend -Tüüp $Tüüp
+
+    # Kuvame tulemused
+    Write-Host "Arvutuse tulemused:" -ForegroundColor Green
+    Write-Host "Raadius: $($Tulemus.Raadius)"
+    Write-Host "Pindala: $($Tulemus.Pindala)"
+    Write-Host "Ümbermõõt: $($Tulemus.Ümbermõõt)"
+}
+
+# Käivita arvutuse protsess
+Start-RingArvutus
