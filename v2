@@ -20,9 +20,11 @@ while IFS=";" read -r full_name age; do
         # Kirjutame tulemuse väljundfaili
         echo "$full_name;$birth_year;$age" >> "$output_file"
     else
+        # Prindime täiendavat infot viga sisaldava rea kohta
         echo "Hoiatus: Väline rida ebatäpne (nimi: '$full_name', vanus: '$age')." >&2
     fi
 done < "$input_file"
 
 # Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
 sort -t";" -k3,3n "$output_file" -o "$output_file"
+
