@@ -27,4 +27,3 @@ sort -t ";" -k3n "$output_file" > temp_file && mv temp_file "$output_file"
 
 # Teavitus
 echo "Tulemused salvestatud faili '$output_file'."
-
