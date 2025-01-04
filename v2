@@ -1,29 +1,26 @@
 #!/bin/bash
 
-# Failinimed
+# Failide nimed
 input_file="names_with_ages.txt"
 output_file="result.txt"
 
-# Kontrollime, kas sisendfail eksisteerib
-if [ ! -f "$input_file" ]; then
-  echo "Sisendfaili '$input_file' ei leitud. Kontrollige failinime ja asukohta."
-  exit 1
-fi
+# Praegune aasta
+current_year=$(date +%Y)
 
-# Loome tulemuste faili päise
+# Tulemused faili kirjutamine koos päisega
 echo "Name;Year;Age" > "$output_file"
 
-# Loeme sisendfaili rida-realt
-current_year=$(date +"%Y")
-while IFS=";" read -r name age; do
-  if [ "$name" != "Name" ]; then # Jätame päise vahele
-    year=$((current_year - age)) # Arvutame sünniaasta
-    echo "$name;$year;$age" >> "$output_file"
-  fi
+# Lugemine sisendfailist
+while IFS=";" read -r full_name age; do
+    # Kontrollime, et rida ei oleks tühi ega ebatäpne
+    if [[ -n "$full_name" && -n "$age" ]]; then
+        # Arvutame sünniaasta
+        birth_year=$((current_year - age))
+
+        # Kirjutame tulemuse väljundfaili
+        echo "$full_name;$birth_year;$age" >> "$output_file"
+    fi
 done < "$input_file"
 
-# Sorteerime faili vanuse järgi ja kirjutame tagasi tulemuste faili
-sort -t ";" -k3n "$output_file" > temp_file && mv temp_file "$output_file"
-
-# Teavitus
-echo "Tulemused salvestatud faili '$output_file'."
+# Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
+sort -t";" -k3,3n "$output_file" -o "$output_file"
