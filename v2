@@ -23,13 +23,16 @@ while IFS=";" read -r full_name age; do
     full_name=$(echo "$full_name" | sed 's/[[:space:]]*$//')
     age=$(echo "$age" | sed 's/[[:space:]]*$//')
 
-    # Prindime välja iga rea, et näha täpselt, mida lugemiseks loeme
+    # Logi iga rea töötlemine
     echo "Lugemisjärgne rida: '$full_name' - '$age'" >&2
 
     # Kontrollige, et nimi ja vanus ei oleks tühjad ning vanus on number
     if [[ -n "$full_name" && -n "$age" && "$age" =~ ^[0-9]+$ ]]; then
         # Arvutame sünniaasta
         birth_year=$((current_year - age))
+
+        # Logi sünniaasta arvutamine
+        echo "Sünniaasta: $birth_year, Vanus: $age" >&2
 
         # Kirjutame tulemuse väljundfaili
         echo "$full_name;$birth_year;$age" >> "$output_file"
@@ -41,3 +44,4 @@ done < "$input_file"
 
 # Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
 sort -t";" -k3,3n "$output_file" -o "$output_file"
+
