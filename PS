@@ -1,0 +1,54 @@
+# Failide nimed
+$inputFile = "names_with_ages.txt"
+$outputFile = "result.txt"
+
+# Praegune aasta
+$currentYear = (Get-Date).Year
+
+# Tulemused faili kirjutamine koos päisega
+"Name;Year;Age" | Out-File -FilePath $outputFile -Encoding UTF8
+
+# Kontrollime, kas sisendfail on UTF-8 kodeeritud
+$encoding = Get-Content $inputFile -Encoding Byte -ReadCount 0 | Select-Object -First 3
+if ($encoding[0] -ne 239 -or $encoding[1] -ne 187 -or $encoding[2] -ne 191) {
+    Write-Host "Sisendfail ei ole UTF-8 kodeeringus, konverteerime..." -ForegroundColor Red
+    $content = Get-Content $inputFile -Raw
+    $content | Set-Content $inputFile -Encoding UTF8
+}
+
+# Faili lugemine ja töötlemine
+$firstLine = $true
+Get-Content $inputFile | ForEach-Object {
+    # Vahetame päise välja
+    if ($firstLine) {
+        $firstLine = $false
+        return
+    }
+
+    $line = $_.Trim()
+
+    # Eemaldame üleliigsed tühikud lõpus ja lõpus
+    $line = $line -replace '\s+$', ''
+
+    # Eraldame nime ja vanuse
+    $columns = $line -split ';'
+    if ($columns.Length -eq 2) {
+        $fullName = $columns[0].Trim()
+        $age = $columns[1].Trim()
+
+        # Kontrollime, et nimi ja vanus on olemas ja vanus on arv
+        if ($fullName -ne "" -and $age -match '^\d+$') {
+            $birthYear = $currentYear - [int]$age
+            # Kirjutame tulemuse faili
+            "$fullName;$birthYear;$age" | Out-File -FilePath $outputFile -Append -Encoding UTF8
+        } else {
+            Write-Host "Hoiatus: Väline rida ebatäpne (nimi: '$fullName', vanus: '$age')." -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "Hoiatus: Rida ei vasta formaadile (nimi: '$line')." -ForegroundColor Yellow
+    }
+}
+
+# Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
+$sortedResults = Get-Content $outputFile | Sort-Object { ($_ -split ';')[2] }
+$sortedResults | Set-Content $outputFile -Encoding UTF8
