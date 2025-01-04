@@ -15,12 +15,11 @@ echo "Name;Year;Age" > "$output_file"
 
 # Loeme sisendfaili rida-realt
 current_year=$(date +"%Y")
-while IFS=";" read name age; do
+while IFS=";" read -r name age; do
   if [ "$name" != "Name" ]; then # Jätame päise vahele
     year=$((current_year - age)) # Arvutame sünniaasta
     echo "$name;$year;$age" >> "$output_file"
   fi
-
 done < "$input_file"
 
 # Sorteerime faili vanuse järgi ja kirjutame tagasi tulemuste faili
@@ -28,3 +27,4 @@ sort -t ";" -k3n "$output_file" > temp_file && mv temp_file "$output_file"
 
 # Teavitus
 echo "Tulemused salvestatud faili '$output_file'."
+
