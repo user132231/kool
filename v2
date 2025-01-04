@@ -10,8 +10,15 @@ current_year=$(date +%Y)
 # Tulemused faili kirjutamine koos päisega
 echo "Name;Year;Age" > "$output_file"
 
-# Lugemine sisendfailist
+# Lugemine sisendfailist, vahetame esimese rea (päise) välja
+first_line=true
 while IFS=";" read -r full_name age; do
+    # Ignoreerime päist (esimest rida)
+    if $first_line; then
+        first_line=false
+        continue
+    fi
+
     # Kontrollige, et nimi ja vanus ei oleks tühjad ning vanus on number
     if [[ -n "$full_name" && -n "$age" && "$age" =~ ^[0-9]+$ ]]; then
         # Arvutame sünniaasta
@@ -27,4 +34,5 @@ done < "$input_file"
 
 # Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
 sort -t";" -k3,3n "$output_file" -o "$output_file"
+
 
