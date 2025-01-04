@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Failinimed
+input_file="names_with_ages.txt"
+output_file="result.txt"
+
+# Kontrollime, kas sisendfail eksisteerib
+if [[ ! -f "$input_file" ]]; then
+  echo "Sisendfaili '$input_file' ei leitud. Kontrollige failinime ja asukohta."
+  exit 1
+fi
+
+# Loome jooksva aasta muutuja
+current_year=$(date +"%Y")
+
+# Esialgne töötlus ja sorteerimine
+{
+  echo "Name;Year;Age" # Päis
+  while IFS=";" read -r name age; do
+    # Arvutame sünniaasta
+    year=$((current_year - age))
+    # Väljundvorming
+    echo "$name;$year;$age"
+  done < <(tail -n +2 "$input_file") # Jätame esimese rea (päise) vahele
+} | sort -t ";" -k3n > "$output_file"
+
+# Väljund
+echo "Tulemused salvestatud faili '$output_file'."
