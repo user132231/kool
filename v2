@@ -10,6 +10,13 @@ current_year=$(date +%Y)
 # Tulemused faili kirjutamine koos päisega
 echo "Name;Year;Age" > "$output_file"
 
+# Kontrollige, kas sisendfail on UTF-8 kodeeritud
+if ! file -i "$input_file" | grep -q 'utf-8'; then
+    # Kui ei ole UTF-8, siis konverteerige
+    echo "Sisendfail ei ole UTF-8 kodeeringus, konverteerime..." >&2
+    input_file=$(iconv -f WINDOWS-1257 -t UTF-8 "$input_file" > "$input_file")
+fi
+
 # Lugemine sisendfailist, vahetame esimese rea (päise) välja
 first_line=true
 while IFS=";" read -r full_name age; do
@@ -19,7 +26,7 @@ while IFS=";" read -r full_name age; do
         continue
     fi
 
-    # Kontrollige, kas rea lõpus on nähtamatuid tähemärke või liigselt tühikuid, kuid EI eemalda täpitähti
+    # Kontrollige, kas rea lõpus on nähtamatuid tähemärke või liigselt tühikuid
     full_name=$(echo "$full_name" | sed 's/[[:space:]]*$//')
     age=$(echo "$age" | sed 's/[[:space:]]*$//')
 
@@ -44,4 +51,3 @@ done < "$input_file"
 
 # Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
 sort -t";" -k3,3n "$output_file" -o "$output_file"
-
