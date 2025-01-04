@@ -1,0 +1,13 @@
+Name;Age
+Zooja Puhur;34
+Nina Sarvik;54
+Maksim Market;12
+Heli Kopter;9
+Aita-Leida Kuusepuu;65
+Anna Nuga;78
+Anna Laks;98
+Helis Tama;32
+Mann A. Vaht;12
+Kessu Sisselasi;33
+Lii Kluseeskiri;54
+Hüppar Eele;100
