@@ -10,9 +10,8 @@ current_year=$(date +%Y)
 # Tulemused faili kirjutamine koos päisega
 echo "Name;Year;Age" > "$output_file"
 
-# Kontrollige, kas sisendfail on UTF-8 kodeeritud
+# Kontrollige, kas sisendfail on UTF-8 kodeeritud, ja konverteerige vajadusel
 if ! file -i "$input_file" | grep -q 'utf-8'; then
-    # Kui ei ole UTF-8, siis konverteerige
     echo "Sisendfail ei ole UTF-8 kodeeringus, konverteerime..." >&2
     input_file=$(iconv -f WINDOWS-1257 -t UTF-8 "$input_file" > "$input_file")
 fi
@@ -26,14 +25,14 @@ while IFS=";" read -r full_name age; do
         continue
     fi
 
-    # Kontrollige, kas rea lõpus on nähtamatuid tähemärke või liigselt tühikuid
+    # Eemaldame üleliigsed tühikud lõpus
     full_name=$(echo "$full_name" | sed 's/[[:space:]]*$//')
     age=$(echo "$age" | sed 's/[[:space:]]*$//')
 
-    # Logi iga rea töötlemine
+    # Logi iga rea töötlemine, sealhulgas täpitähed
     echo "Lugemisjärgne rida: '$full_name' - '$age'" >&2
 
-    # Kontrollige, et nimi ja vanus ei oleks tühjad ning vanus on number
+    # Kontrollime, et nimi ja vanus ei oleks tühjad ning vanus on number
     if [[ -n "$full_name" && -n "$age" && "$age" =~ ^[0-9]+$ ]]; then
         # Arvutame sünniaasta
         birth_year=$((current_year - age))
