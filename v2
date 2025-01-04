@@ -19,6 +19,10 @@ while IFS=";" read -r full_name age; do
         continue
     fi
 
+    # Eemaldame võimalikud liigne tühikud
+    full_name=$(echo "$full_name" | xargs)
+    age=$(echo "$age" | xargs)
+
     # Kontrollige, et nimi ja vanus ei oleks tühjad ning vanus on number
     if [[ -n "$full_name" && -n "$age" && "$age" =~ ^[0-9]+$ ]]; then
         # Arvutame sünniaasta
@@ -34,5 +38,6 @@ done < "$input_file"
 
 # Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
 sort -t";" -k3,3n "$output_file" -o "$output_file"
+
 
 
