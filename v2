@@ -19,9 +19,12 @@ while IFS=";" read -r full_name age; do
         continue
     fi
 
-    # Eemaldame võimalikud liigne tühikud
-    full_name=$(echo "$full_name" | xargs)
-    age=$(echo "$age" | xargs)
+    # Kontrollige, kas rea lõpus on nähtamatuid tähemärke või liigselt tühikuid
+    full_name=$(echo "$full_name" | sed 's/[[:space:]]*$//')
+    age=$(echo "$age" | sed 's/[[:space:]]*$//')
+
+    # Prindime välja iga rea, et näha täpselt, mida lugemiseks loeme
+    echo "Lugemisjärgne rida: '$full_name' - '$age'" >&2
 
     # Kontrollige, et nimi ja vanus ei oleks tühjad ning vanus on number
     if [[ -n "$full_name" && -n "$age" && "$age" =~ ^[0-9]+$ ]]; then
@@ -31,13 +34,14 @@ while IFS=";" read -r full_name age; do
         # Kirjutame tulemuse väljundfaili
         echo "$full_name;$birth_year;$age" >> "$output_file"
     else
-        # Prindime täiendavat infot viga sisaldava rea kohta
+        # Kui rida ei vasta ootustele, prindime täiendava veateate
         echo "Hoiatus: Väline rida ebatäpne (nimi: '$full_name', vanus: '$age')." >&2
     fi
 done < "$input_file"
 
 # Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
 sort -t";" -k3,3n "$output_file" -o "$output_file"
+
 
 
 
