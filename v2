@@ -19,7 +19,7 @@ while IFS=";" read -r full_name age; do
         continue
     fi
 
-    # Kontrollige, kas rea lõpus on nähtamatuid tähemärke või liigselt tühikuid
+    # Kontrollige, kas rea lõpus on nähtamatuid tähemärke või liigselt tühikuid, kuid EI eemalda täpitähti
     full_name=$(echo "$full_name" | sed 's/[[:space:]]*$//')
     age=$(echo "$age" | sed 's/[[:space:]]*$//')
 
@@ -41,7 +41,3 @@ done < "$input_file"
 
 # Sorteerime tulemused vanuse järgi (kasvavalt) ja kirjutame need tagasi faili
 sort -t";" -k3,3n "$output_file" -o "$output_file"
-
-
-
-
